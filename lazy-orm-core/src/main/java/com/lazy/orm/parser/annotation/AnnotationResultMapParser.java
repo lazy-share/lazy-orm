@@ -1,9 +1,14 @@
 package com.lazy.orm.parser.annotation;
 
+import com.lazy.orm.annotation.Column;
+import com.lazy.orm.annotation.Sql;
 import com.lazy.orm.mapper.ResultMap;
 import com.lazy.orm.parser.support.AbstractResultMapParser;
+import com.lazy.orm.type.TypeHandlerFactory;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.Collection;
 
 /**
  * <p>
@@ -18,6 +23,34 @@ public class AnnotationResultMapParser extends AbstractResultMapParser {
 
     @Override
     protected ResultMap doParser(Method method) {
-        return null;
+
+        ResultMap resultMap = new ResultMap();
+        Sql sql = method.getAnnotation(Sql.class);
+        Class<?> returnType = sql.itemType().equals(Collection.class) ?
+                method.getReturnType() : sql.itemType();
+        resultMap.setReturnType(returnType);
+        resultMap.setItemType(sql.itemType());
+        if (returnType.equals(Void.class)) {
+            return resultMap;
+        }
+        Field[] fields = returnType.getDeclaredFields();
+
+        int idx = 0;
+        for (Field field : fields) {
+            ResultMap.ResultMeta resultMeta = new ResultMap.ResultMeta();
+            Column column = field.getAnnotation(Column.class);
+            if (column == null) {
+                continue;
+            }
+            resultMeta
+                    .setName(field.getName())
+                    .setColumn(column.value())
+                    .setIdx(idx++)
+                    .setTypeHandler(TypeHandlerFactory.of(field.getType()));
+            resultMap.addMeta(column.value(), resultMeta);
+        }
+
+        return resultMap;
+
     }
 }

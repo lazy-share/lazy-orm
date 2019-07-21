@@ -10,7 +10,6 @@ import com.lazy.orm.parser.ResultMapParser;
 import com.lazy.orm.parser.SqlSourceParser;
 import com.lazy.orm.parser.support.AbstractMappedStatementParser;
 import com.lazy.orm.session.Configuration;
-import org.omg.CORBA.MARSHAL;
 
 import java.lang.reflect.Method;
 
@@ -34,12 +33,11 @@ public class AnnotationMappedStatementParser extends AbstractMappedStatementPars
     protected MappedStatement doParser(Method method) {
 
         //解析SqlSource
-        Sql sql = method.getAnnotation(Sql.class);
         SqlSourceParser sqlSourceParser = new AnnotationSqlSourceParser();
-        SqlSource sqlSource = sqlSourceParser.parser(sql.value());
+        SqlSource sqlSource = sqlSourceParser.parser(method);
 
         //解析ParameterMap
-        ParameterMapParser parameterMapParser = new AnnotationParameterMapParser();
+        ParameterMapParser parameterMapParser = new AnnotationParameterMapParser(sqlSource);
         ParameterMap parameterMap = parameterMapParser.parser(method);
 
         //解析ResultMap

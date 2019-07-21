@@ -2,6 +2,8 @@ package com.lazy.orm.parser;
 
 import com.lazy.orm.mapper.SqlSource;
 
+import java.lang.reflect.Method;
+
 /**
  * <p>
  * SqlSource对象解析
@@ -12,6 +14,6 @@ import com.lazy.orm.mapper.SqlSource;
  */
 public interface SqlSourceParser {
 
-    SqlSource parser(String sqlStr);
+    SqlSource parser(Method method);
 
 }

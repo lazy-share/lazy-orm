@@ -1,6 +1,7 @@
 package com.lazy.orm.type;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Date;
@@ -38,6 +39,8 @@ public class TypeHandlerFactory {
             return new LocalTimeTypeHandler();
         } else if (Long.class.equals(cls)) {
             return new LongTypeHandler();
+        } else if (Timestamp.class.equals(cls)) {
+            return new TimestampTypeHandler();
         } else {
             return new ObjectTypeHandler();
         }

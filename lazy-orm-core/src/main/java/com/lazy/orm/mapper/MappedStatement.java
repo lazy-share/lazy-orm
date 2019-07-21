@@ -10,11 +10,22 @@ package com.lazy.orm.mapper;
  */
 public class MappedStatement {
 
+    private String id;
+
     private SqlSource sqlSource;
 
     private ParameterMap parameterMap;
 
     private ResultMap resultMap;
+
+    public String getId() {
+        return id;
+    }
+
+    public MappedStatement setId(String id) {
+        this.id = id;
+        return this;
+    }
 
     public SqlSource getSqlSource() {
         return sqlSource;

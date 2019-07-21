@@ -3,6 +3,8 @@ package com.lazy.orm.parser.support;
 import com.lazy.orm.mapper.SqlSource;
 import com.lazy.orm.parser.SqlSourceParser;
 
+import java.lang.reflect.Method;
+
 /**
  * <p>
  * 抽象Sql解析器
@@ -15,9 +17,9 @@ public abstract class AbstractSqlSourceParser implements SqlSourceParser {
 
 
     @Override
-    public SqlSource parser(String sqlStr) {
-        return this.doParser(sqlStr);
+    public SqlSource parser(Method method) {
+        return this.doParser(method);
     }
 
-    protected abstract SqlSource doParser(String sqlStr);
+    protected abstract SqlSource doParser(Method method);
 }

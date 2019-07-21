@@ -6,6 +6,7 @@ import com.lazy.orm.exception.BindingException;
 import com.lazy.orm.executor.Executor;
 import com.lazy.orm.mapper.MappedStatement;
 
+import java.io.IOException;
 import java.sql.SQLException;
 
 /**
@@ -29,7 +30,7 @@ public class DefaultSqlSession implements SqlSession {
     }
 
     @Override
-    public <T> T execute(String mapperKey, Object params) {
+    public <T> T execute(String mapperKey, Object... params) {
 
         MappedStatement mappedStatement = configuration.getMappedStatement(mapperKey);
         if (mappedStatement == null) {
@@ -65,5 +66,10 @@ public class DefaultSqlSession implements SqlSession {
     @Override
     public Configuration getConfiguration() {
         return configuration;
+    }
+
+    @Override
+    public void close() throws IOException {
+        this.executor.close();
     }
 }

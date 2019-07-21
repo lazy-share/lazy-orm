@@ -69,6 +69,7 @@ public class MapperRegistry {
             MappedStatement mappedStatement = mappedStatementParser.parser(method);
 
             String key = type.getName() + "." + method.getName();
+            mappedStatement.setId(key);
             configuration.addMappedStatement(key, mappedStatement);
         }
     }

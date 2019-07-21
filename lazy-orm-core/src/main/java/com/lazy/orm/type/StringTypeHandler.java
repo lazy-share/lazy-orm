@@ -15,6 +15,7 @@ import java.sql.SQLException;
  * @since 2019/7/21.
  */
 public class StringTypeHandler extends AbstractTypeHandler<String> {
+
     @Override
     public void doSetParameter(PreparedStatement ps, int i, String parameter) throws SQLException {
         ps.setString(i, parameter);

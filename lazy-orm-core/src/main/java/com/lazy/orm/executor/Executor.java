@@ -15,10 +15,12 @@ import java.sql.SQLException;
 public interface Executor {
 
 
-    <T> T execute(MappedStatement statement, Object params);
+    <T> T execute(MappedStatement statement, Object[] params);
 
     void commit(boolean required) throws SQLException;
 
     void rollback(boolean required) throws SQLException;
+
+    void close();
 
 }

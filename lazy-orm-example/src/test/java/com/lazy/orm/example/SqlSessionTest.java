@@ -38,17 +38,16 @@ public class SqlSessionTest {
         SqlSession sqlSession = SqlSessionFactoryBuilder.build(configuration).openSession();
 
         //执行Sql
-        List<UserEntity> userEntityList = sqlSession.execute("com.lazy.orm.example.dao.UserMapper.selectByPk",1);
-        System.out.println(JSON.toJSONString(userEntityList));
+        UserEntity userEntity = sqlSession.execute("com.lazy.orm.example.dao.UserMapper.selectByPk", 2L);
+        System.out.println(JSON.toJSONString(userEntity));
 
         //注解sql
         UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
-        userEntityList = userMapper.selectByCondition("lazy", 20, 1, 10);
-        assert userEntityList.size() > 0;
+        List<UserEntity> userEntityList = userMapper.selectByCondition("lazy", 20, 0, 10);
+//        assert userEntityList.size() > 0;
         System.out.println(JSON.toJSONString(userEntityList));
-
-        UserEntity userEntity = userMapper.selectByPk("1");
-        assert userEntity != null;
+//
+        userEntity = userMapper.selectByPk(1L);
         System.out.println(JSON.toJSONString(userEntity));
     }
 }

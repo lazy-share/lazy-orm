@@ -1,5 +1,8 @@
 package com.lazy.orm.session;
 
+import java.io.Closeable;
+import java.io.IOException;
+
 /**
  * <p>
  * 会话类
@@ -8,10 +11,10 @@ package com.lazy.orm.session;
  * @author laizhiyuan
  * @since 2019/7/19.
  */
-public interface SqlSession {
+public interface SqlSession extends Closeable {
 
 
-    <T> T execute(String mapperKey, Object params);
+    <T> T execute(String mapperKey, Object... params);
 
     void commit();
 
@@ -21,4 +24,6 @@ public interface SqlSession {
 
     Configuration getConfiguration();
 
+    @Override
+    void close() throws IOException;
 }

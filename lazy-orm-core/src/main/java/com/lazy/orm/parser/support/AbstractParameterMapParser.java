@@ -1,6 +1,7 @@
 package com.lazy.orm.parser.support;
 
 import com.lazy.orm.mapper.ParameterMap;
+import com.lazy.orm.mapper.SqlSource;
 import com.lazy.orm.parser.ParameterMapParser;
 
 import java.lang.reflect.Method;
@@ -15,6 +16,7 @@ import java.lang.reflect.Method;
  */
 public abstract class AbstractParameterMapParser implements ParameterMapParser {
 
+    protected SqlSource sqlSource;
 
     @Override
     public ParameterMap parser(Method method) {

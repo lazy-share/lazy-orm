@@ -1,6 +1,7 @@
 package com.lazy.orm.annotation;
 
 import java.lang.annotation.*;
+import java.util.Collection;
 
 /**
  * <p>
@@ -17,6 +18,8 @@ public @interface Sql {
 
     String value();
 
-    Class<?> returnType() default Object.class;
+    Class<?> itemType() default Collection.class;
+
+    DmlType dmlType() default DmlType.SELECT;
 
 }

@@ -2,7 +2,6 @@ package com.lazy.orm.mapper;
 
 import com.lazy.orm.type.TypeHandler;
 
-import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -16,25 +15,61 @@ import java.util.Map;
  */
 public class ResultMap {
 
-    private Map<String, TypeHandler> resultHandler = new HashMap<>();
-    private Map<String, Method> resultVal = new HashMap<>();
+    public static class ResultMeta {
+        private String name;
+        private String column;
+        private TypeHandler typeHandler;
+        private Integer idx;
+
+        public Integer getIdx() {
+            return idx;
+        }
+
+        public ResultMeta setIdx(Integer idx) {
+            this.idx = idx;
+            return this;
+        }
+
+        public String getColumn() {
+            return column;
+        }
+
+        public ResultMeta setColumn(String column) {
+            this.column = column;
+            return this;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public ResultMeta setName(String name) {
+            this.name = name;
+            return this;
+        }
+
+        public TypeHandler getTypeHandler() {
+            return typeHandler;
+        }
+
+        public ResultMeta setTypeHandler(TypeHandler typeHandler) {
+            this.typeHandler = typeHandler;
+            return this;
+        }
+    }
+
+    private Map<String, ResultMeta> resultMetas = new HashMap<>();
+
     private Class<?> returnType;
 
-    public Map<String, TypeHandler> getResultHandler() {
-        return resultHandler;
+    private Class<?> itemType;
+
+    public Class<?> getItemType() {
+        return itemType;
     }
 
-    public ResultMap setResultHandler(Map<String, TypeHandler> resultHandler) {
-        this.resultHandler = resultHandler;
-        return this;
-    }
-
-    public Map<String, Method> getResultVal() {
-        return resultVal;
-    }
-
-    public ResultMap setResultVal(Map<String, Method> resultVal) {
-        this.resultVal = resultVal;
+    public ResultMap setItemType(Class<?> itemType) {
+        this.itemType = itemType;
         return this;
     }
 
@@ -45,5 +80,17 @@ public class ResultMap {
     public ResultMap setReturnType(Class<?> returnType) {
         this.returnType = returnType;
         return this;
+    }
+
+    public void addMeta(String name, ResultMeta meta) {
+        resultMetas.put(name, meta);
+    }
+
+    public ResultMeta getMeta(String name) {
+        return resultMetas.get(name);
+    }
+
+    public Map<String, ResultMeta> getResultMetas() {
+        return resultMetas;
     }
 }

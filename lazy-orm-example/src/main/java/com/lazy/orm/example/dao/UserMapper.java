@@ -1,6 +1,7 @@
 package com.lazy.orm.example.dao;
 
 import com.lazy.orm.annotation.Mapper;
+import com.lazy.orm.annotation.Param;
 import com.lazy.orm.annotation.Sql;
 import com.lazy.orm.example.entity.UserEntity;
 
@@ -27,14 +28,18 @@ public interface UserMapper {
      * @return 结果集合
      */
     @Sql(
-            value = "select id, name from user " +
-                    "where name like '%${name}%' " +
-                    "and age > ${age} " +
+            value = "select id, name from t_user " +
+                    "where name like #{name} " +
+                    "and age > #{age} " +
                     "order by age desc " +
-                    "limit ${offset}, ${limit}",
-            returnType = UserEntity.class
+                    "limit #{offset}, #{limit}",
+            itemType = UserEntity.class
     )
-    List<UserEntity> selectByCondition(String name, int age, int offset, int limit);
+    List<UserEntity> selectByCondition(@Param("name") String name,
+                                       @Param("age") int age,
+                                       @Param("offset") int offset,
+                                       @Param("limit") int limit);
+
 
 
     /**
@@ -44,8 +49,8 @@ public interface UserMapper {
      * @return 数据
      */
     @Sql(
-            value = "select * from user where id = ':pk'"
+            value = "select * from t_user where id = #{pk}"
     )
-    UserEntity selectByPk(String pk);
+    UserEntity selectByPk(@Param("pk") Long pk);
 
 }

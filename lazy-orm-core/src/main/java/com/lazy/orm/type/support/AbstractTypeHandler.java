@@ -18,6 +18,7 @@ public abstract class AbstractTypeHandler<T> implements TypeHandler<T> {
 
 
     @Override
+    @SuppressWarnings("unchecked")
     public void setParameter(PreparedStatement ps, int i, T parameter) throws SQLException {
         this.doSetParameter(ps, i, parameter);
     }

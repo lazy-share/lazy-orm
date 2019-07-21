@@ -22,7 +22,7 @@ public class UserEntity {
     @Column("salary")
     private BigDecimal salary;
     @Column("age")
-    private int age;
+    private Integer age;
     @Column("id")
     private Long id;
     @Column("create_time")
@@ -47,11 +47,12 @@ public class UserEntity {
         return this;
     }
 
-    public int getAge() {
+
+    public Integer getAge() {
         return age;
     }
 
-    public UserEntity setAge(int age) {
+    public UserEntity setAge(Integer age) {
         this.age = age;
         return this;
     }
