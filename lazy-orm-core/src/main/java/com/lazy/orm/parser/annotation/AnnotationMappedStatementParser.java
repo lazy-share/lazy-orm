@@ -1,6 +1,5 @@
 package com.lazy.orm.parser.annotation;
 
-import com.lazy.orm.annotation.Sql;
 import com.lazy.orm.mapper.MappedStatement;
 import com.lazy.orm.mapper.ParameterMap;
 import com.lazy.orm.mapper.ResultMap;
@@ -47,6 +46,7 @@ public class AnnotationMappedStatementParser extends AbstractMappedStatementPars
         MappedStatement mappedStatement = new MappedStatement();
         mappedStatement.setSqlSource(sqlSource)
                 .setParameterMap(parameterMap)
+                .setDmlType(sqlSource.getDmlType())
                 .setResultMap(resultMap);
 
         return mappedStatement;

@@ -58,7 +58,7 @@ public class AnnotationSqlSourceParser extends AbstractSqlSourceParser {
                 placeholderParamIdxMap.put(finalSql.lastIndexOf("?"), paramKey.toString());
                 sqlSource.putPlaceholder(paramKey.toString(), new SqlSource.Placeholder()
                         .setIdx(idx++)
-                        .setName(name));
+                        .setName(paramKey.toString()));
                 paramKey.setLength(0);
                 continue;
             }

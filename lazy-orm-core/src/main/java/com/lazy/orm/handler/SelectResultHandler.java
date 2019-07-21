@@ -1,8 +1,7 @@
-package com.lazy.orm.handler.simple;
+package com.lazy.orm.handler;
 
 import com.lazy.orm.exception.ExecutorException;
 import com.lazy.orm.exception.SingleRowException;
-import com.lazy.orm.handler.ResultSetContext;
 import com.lazy.orm.handler.support.AbstractResultHandler;
 import com.lazy.orm.mapper.MappedStatement;
 import com.lazy.orm.mapper.ResultMap;
@@ -16,13 +15,13 @@ import java.util.Map;
 
 /**
  * <p>
- * 简单结果集处理器
+ * 查询结果集处理器
  * </p>
  *
  * @author laizhiyuan
  * @since 2019/7/20.
  */
-public class SimpleResultHandler extends AbstractResultHandler {
+public class SelectResultHandler extends AbstractResultHandler {
 
 
     @Override
@@ -31,7 +30,7 @@ public class SimpleResultHandler extends AbstractResultHandler {
 
 
         try {
-            ResultSet rs = context.getResultSet();
+            ResultSet rs = context.getStmt().getResultSet();
             MappedStatement statement = context.getStatement();
             ResultMap resultMap = statement.getResultMap();
             Map<String, ResultMap.ResultMeta> resultMetas = resultMap.getResultMetas();

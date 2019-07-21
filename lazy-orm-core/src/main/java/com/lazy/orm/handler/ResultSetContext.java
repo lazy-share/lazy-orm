@@ -3,6 +3,7 @@ package com.lazy.orm.handler;
 import com.lazy.orm.mapper.MappedStatement;
 
 import java.sql.ResultSet;
+import java.sql.Statement;
 
 /**
  * <p>
@@ -14,11 +15,11 @@ import java.sql.ResultSet;
  */
 public class ResultSetContext {
 
-    private ResultSet resultSet;
+    private Statement stmt;
     private MappedStatement statement;
 
-    public ResultSetContext(ResultSet resultSet, MappedStatement statement) {
-        this.resultSet = resultSet;
+    public ResultSetContext(Statement stmt, MappedStatement statement) {
+        this.stmt = stmt;
         this.statement = statement;
     }
 
@@ -31,12 +32,12 @@ public class ResultSetContext {
         return this;
     }
 
-    public ResultSet getResultSet() {
-        return resultSet;
+    public Statement getStmt() {
+        return stmt;
     }
 
-    public ResultSetContext setResultSet(ResultSet resultSet) {
-        this.resultSet = resultSet;
+    public ResultSetContext setStmt(Statement stmt) {
+        this.stmt = stmt;
         return this;
     }
 }

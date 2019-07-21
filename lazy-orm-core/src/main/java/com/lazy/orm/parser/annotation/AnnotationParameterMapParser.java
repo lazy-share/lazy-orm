@@ -33,8 +33,8 @@ public class AnnotationParameterMapParser extends AbstractParameterMapParser {
         for (Parameter parameter : parameters) {
             Param param = parameter.getAnnotation(Param.class);
             if (param == null) {
-                this.parserObjectParameter(parameterMap, parameter);
-                continue;
+                this.parserObjectParameter(parameterMap, method.getParameterTypes()[pIdx -1]);
+                break;
             }
             String name = param.value();
             SqlSource.Placeholder placeholder = sqlSource.getPlaceholder(name);
@@ -51,9 +51,8 @@ public class AnnotationParameterMapParser extends AbstractParameterMapParser {
     }
 
 
-    private void parserObjectParameter(ParameterMap parameterMap, Parameter parameter) {
-        Class<?> pClass = parameter.getClass();
-        Field[] fields = pClass.getDeclaredFields();
+    private void parserObjectParameter(ParameterMap parameterMap, Class cls) {
+        Field[] fields = cls.getDeclaredFields();
         for (Field field : fields) {
             SqlSource.Placeholder p = sqlSource.getPlaceholder(field.getName());
             if (p == null) {
@@ -65,8 +64,8 @@ public class AnnotationParameterMapParser extends AbstractParameterMapParser {
                             .setParamIdx(1)
                             .setName(p.getName())
                             .setLike(p.isLike())
-                            .setType(parameter.getType())
-                            .setTypeHandler(TypeHandlerFactory.of(parameter.getType())));
+                            .setType(cls)
+                            .setTypeHandler(TypeHandlerFactory.of(cls)));
         }
 
     }

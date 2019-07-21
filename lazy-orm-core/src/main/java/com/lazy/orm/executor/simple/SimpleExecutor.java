@@ -5,13 +5,10 @@ import com.lazy.orm.executor.support.AbstractExecutor;
 import com.lazy.orm.handler.ResultSetContext;
 import com.lazy.orm.mapper.MappedStatement;
 import com.lazy.orm.mapper.ParameterMap;
-import com.lazy.orm.mapper.SqlSource;
 import com.lazy.orm.tx.Transaction;
-import com.lazy.orm.util.StringUtil;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Map;
 
@@ -43,20 +40,25 @@ public class SimpleExecutor extends AbstractExecutor {
             for (String param : parameterMetas.keySet()) {
                 ParameterMap.ParameterMeta meta = parameterMetas.get(param);
                 Object parameterVal = parameterValHandler.getVal(params[meta.getParamIdx() - 1], meta.getName());
-                if (meta.isLike()){
+                if (meta.isLike()) {
                     parameterVal = "%" + parameterVal + "%";
                 }
                 meta.getTypeHandler().setParameter(ps, meta.getPlaceholderIdx(), parameterVal);
             }
             ps.execute();
 
-            //处理结果
-            ResultSet rs = ps.getResultSet();
-            if (rs == null) {
-                return null;
+            switch (statement.getDmlType()) {
+                case SELECT:
+                    return selectHandler.handlerResult(new ResultSetContext(ps, statement));
+                case UPDATE:
+                    return updateHandler.handlerResult(new ResultSetContext(ps, statement));
+                case INSERT:
+                    return updateHandler.handlerResult(new ResultSetContext(ps, statement));
+                case DELETE:
+                    return updateHandler.handlerResult(new ResultSetContext(ps, statement));
+                default:
+                    throw new ExecutorException("找不到对应的DML类型");
             }
-
-            return resultHandler.handlerResult(new ResultSetContext(rs, statement));
         } catch (Exception e) {
             throw new ExecutorException("执行结果异常", e);
         }

@@ -8,10 +8,13 @@ import com.lazy.orm.io.Resources;
 import com.lazy.orm.session.Configuration;
 import com.lazy.orm.session.SqlSession;
 import com.lazy.orm.session.SqlSessionFactoryBuilder;
+import org.junit.Before;
 import org.junit.Test;
 
 import javax.sql.DataSource;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Properties;
 
@@ -20,10 +23,10 @@ import java.util.Properties;
  */
 public class SqlSessionTest {
 
+    private SqlSession sqlSession;
 
-    @Test
-    public void test() throws IOException {
-
+    @Before
+    public void before() throws IOException {
         //数据源获取
         Properties props = Resources.getResourceAsProperties("lazyorm.properties");
         DataSource ds = new SimpleDataSourceFactory().setProperties(props).getDataSource();
@@ -35,8 +38,31 @@ public class SqlSessionTest {
                 //Mapper
                 .addMapper(UserMapper.class);
 
-        SqlSession sqlSession = SqlSessionFactoryBuilder.build(configuration).openSession();
+        sqlSession = SqlSessionFactoryBuilder.build(configuration).openSession();
+    }
 
+    @Test
+    public void testInsert() {
+        UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
+        int count = userMapper.insert(
+                new UserEntity()
+                        .setAge(100)
+                        .setSalary(new BigDecimal("1009"))
+                        .setCreateTime(new Timestamp(System.currentTimeMillis()))
+                        .setId(101L)
+                        .setName("zhangsan")
+        );
+
+        sqlSession.commit();
+        System.out.println(count);
+
+//        UserEntity userEntity = userMapper.selectByPk(10L);
+//        System.out.println(JSON.toJSONString(userEntity));
+    }
+
+
+    @Test
+    public void testSelect() throws IOException {
         //执行Sql
         UserEntity userEntity = sqlSession.execute("com.lazy.orm.example.dao.UserMapper.selectByPk", 2L);
         System.out.println(JSON.toJSONString(userEntity));

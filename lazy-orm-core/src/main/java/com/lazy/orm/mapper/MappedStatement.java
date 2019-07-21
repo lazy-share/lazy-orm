@@ -1,5 +1,7 @@
 package com.lazy.orm.mapper;
 
+import com.lazy.orm.annotation.DmlType;
+
 /**
  * <p>
  * Mapper语句类
@@ -17,6 +19,17 @@ public class MappedStatement {
     private ParameterMap parameterMap;
 
     private ResultMap resultMap;
+
+    private DmlType dmlType;
+
+    public DmlType getDmlType() {
+        return dmlType;
+    }
+
+    public MappedStatement setDmlType(DmlType dmlType) {
+        this.dmlType = dmlType;
+        return this;
+    }
 
     public String getId() {
         return id;

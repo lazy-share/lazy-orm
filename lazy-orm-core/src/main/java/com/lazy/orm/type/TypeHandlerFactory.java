@@ -21,13 +21,13 @@ public class TypeHandlerFactory {
 
         if (String.class.equals(cls)) {
             return new StringTypeHandler();
-        } else if (Integer.class.equals(cls)) {
+        } else if (Integer.class.equals(cls) || int.class.equals(cls)) {
             return new IntegerTypeHandler();
         } else if (BigDecimal.class.equals(cls)) {
             return new BigDecimalTypeHandler();
-        } else if (Byte.class.equals(cls)) {
+        } else if (Byte.class.equals(cls) || byte.class.equals(cls)) {
             return new ByteTypeHandler();
-        } else if (Character.class.equals(cls)) {
+        } else if (Character.class.equals(cls) || char.class.equals(cls)) {
             return new CharTypeHandler();
         } else if (Date.class.equals(cls)) {
             return new DateTypeHandler();
@@ -37,7 +37,7 @@ public class TypeHandlerFactory {
             return new LocalDateTimeTypeHandler();
         } else if (LocalTime.class.equals(cls)) {
             return new LocalTimeTypeHandler();
-        } else if (Long.class.equals(cls)) {
+        } else if (Long.class.equals(cls) || long.class.equals(cls)) {
             return new LongTypeHandler();
         } else if (Timestamp.class.equals(cls)) {
             return new TimestampTypeHandler();

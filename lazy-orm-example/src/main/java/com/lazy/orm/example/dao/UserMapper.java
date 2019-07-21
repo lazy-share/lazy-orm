@@ -1,5 +1,6 @@
 package com.lazy.orm.example.dao;
 
+import com.lazy.orm.annotation.DmlType;
 import com.lazy.orm.annotation.Mapper;
 import com.lazy.orm.annotation.Param;
 import com.lazy.orm.annotation.Sql;
@@ -52,5 +53,12 @@ public interface UserMapper {
             value = "select * from t_user where id = #{pk}"
     )
     UserEntity selectByPk(@Param("pk") Long pk);
+
+    @Sql(
+            value = "insert into t_user (id, name, age, salary, create_time) values (" +
+                    "#{id}, #{name}, #{age}, #{salary}, #{createTime})",
+            dmlType = DmlType.INSERT
+    )
+    int insert(UserEntity entity);
 
 }
