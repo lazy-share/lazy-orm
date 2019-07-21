@@ -42,6 +42,40 @@ public class SqlSessionTest {
     }
 
     @Test
+    public void testBatDelete(){
+        UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
+        int count = userMapper.batDel("10,11");
+
+        sqlSession.commit();
+        System.out.println(count);
+    }
+
+    @Test
+    public void testDelete(){
+        UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
+        int count = userMapper.delete(15L);
+
+        sqlSession.commit();
+        System.out.println(count);
+    }
+
+    @Test
+    public void testUpdate(){
+        UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
+        int count = userMapper.update(
+                new UserEntity()
+                        .setAge(16)
+                        .setSalary(new BigDecimal("1002"))
+                        .setCreateTime(new Timestamp(System.currentTimeMillis()))
+                        .setId(10L)
+                        .setName("lisi")
+        );
+
+        sqlSession.commit();
+        System.out.println(count);
+    }
+
+    @Test
     public void testInsert() {
         UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
         int count = userMapper.insert(
@@ -49,8 +83,8 @@ public class SqlSessionTest {
                         .setAge(100)
                         .setSalary(new BigDecimal("1009"))
                         .setCreateTime(new Timestamp(System.currentTimeMillis()))
-                        .setId(101L)
-                        .setName("zhangsan")
+                        .setId(15L)
+                        .setName("wangnwu")
         );
 
         sqlSession.commit();
