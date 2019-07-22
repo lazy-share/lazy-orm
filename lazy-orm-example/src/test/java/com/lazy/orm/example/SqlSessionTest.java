@@ -44,20 +44,82 @@ public class SqlSessionTest {
 
     @Test
     public void initTestData() {
-        int count = 10000000;
         UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
         userMapper.deleteAll();
-        while (count-- > 0) {
-            userMapper.insert(
-                    new UserEntity()
-                            .setAge(count)
-                            .setSalary(new BigDecimal(String.valueOf(count)))
-                            .setCreateTime(new Timestamp(System.currentTimeMillis()))
-                            .setId((long) count)
-                            .setName("lazy" + count)
-            );
-        }
-        sqlSession.commit();
+        new Thread(() -> {
+            int count = 0;
+            while (count++ < 200000) {
+                userMapper.insert(
+                        new UserEntity()
+                                .setAge(count)
+                                .setSalary(new BigDecimal(String.valueOf(count)))
+                                .setCreateTime(new Timestamp(System.currentTimeMillis()))
+                                .setId((long) count)
+                                .setName("lazy" + count)
+                );
+            }
+            sqlSession.commit();
+        }).run();
+
+        new Thread(() -> {
+            int count = 200000;
+            while (count++ < 400000) {
+                userMapper.insert(
+                        new UserEntity()
+                                .setAge(count)
+                                .setSalary(new BigDecimal(String.valueOf(count)))
+                                .setCreateTime(new Timestamp(System.currentTimeMillis()))
+                                .setId((long) count)
+                                .setName("lazy" + count)
+                );
+            }
+            sqlSession.commit();
+        }).run();
+
+        new Thread(() -> {
+            int count = 400000;
+            while (count++ < 600000) {
+                userMapper.insert(
+                        new UserEntity()
+                                .setAge(count)
+                                .setSalary(new BigDecimal(String.valueOf(count)))
+                                .setCreateTime(new Timestamp(System.currentTimeMillis()))
+                                .setId((long) count)
+                                .setName("lazy" + count)
+                );
+            }
+            sqlSession.commit();
+        }).run();
+
+        new Thread(() -> {
+            int count = 600000;
+            while (count++ < 800000) {
+                userMapper.insert(
+                        new UserEntity()
+                                .setAge(count)
+                                .setSalary(new BigDecimal(String.valueOf(count)))
+                                .setCreateTime(new Timestamp(System.currentTimeMillis()))
+                                .setId((long) count)
+                                .setName("lazy" + count)
+                );
+            }
+            sqlSession.commit();
+        }).run();
+
+        new Thread(() -> {
+            int count = 800000;
+            while (count++ < 1000000) {
+                userMapper.insert(
+                        new UserEntity()
+                                .setAge(count)
+                                .setSalary(new BigDecimal(String.valueOf(count)))
+                                .setCreateTime(new Timestamp(System.currentTimeMillis()))
+                                .setId((long) count)
+                                .setName("lazy" + count)
+                );
+            }
+            sqlSession.commit();
+        }).run();
     }
 
     @Test
@@ -144,7 +206,7 @@ public class SqlSessionTest {
     public void testSelect2() {
         UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
         List<Long> ids = new ArrayList<>();
-        int count = 30000;
+        int count = 300000;
         while (count-- > 0) {
             ids.add((long) count);
         }
@@ -154,7 +216,7 @@ public class SqlSessionTest {
 //                .setIds(ids)
 //        );
 
-        List<UserEntity> userEntities = userMapper.findByParams(ids, "lazy", 30000);
+        List<UserEntity> userEntities = userMapper.findByParams(ids, "lazy", 3000000);
 
         System.out.println(userEntities.size());
 //        System.out.println(JSON.toJSONString(userEntities));

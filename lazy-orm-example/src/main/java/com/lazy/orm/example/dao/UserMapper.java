@@ -55,6 +55,12 @@ public interface UserMapper {
     )
     UserEntity selectByPk(@Param("pk") Long pk);
 
+
+    @Sql(
+            value = "select count(1) from t_user where name like #{name}"
+    )
+    long count(@Param("name") String name);
+
     /**
      * 插入一条数据
      *
@@ -76,13 +82,13 @@ public interface UserMapper {
 
 
     @Sql(
-            value = "select * from t_user where name like #{name} and id in (#{ids}) and age < #{age}",
+            value = "select name, create_time, id from t_user where name like #{name} and id in (#{ids}) and age < #{age}",
             itemType = UserEntity.class
     )
     List<UserEntity> findByDto(QueryUserDto dto);
 
     @Sql(
-            value = "select * from t_user where name like #{name} and id in (#{ids}) and age < #{age}",
+            value = "select name, create_time, id from t_user where name like #{name} and id in (#{ids}) and age < #{age}",
             itemType = UserEntity.class
     )
     List<UserEntity> findByParams(@Param("ids") List<Long> ids,
