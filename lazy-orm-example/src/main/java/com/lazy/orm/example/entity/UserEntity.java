@@ -1,7 +1,6 @@
 package com.lazy.orm.example.entity;
 
 import com.lazy.orm.annotation.Column;
-import com.lazy.orm.annotation.Table;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
@@ -14,7 +13,6 @@ import java.sql.Timestamp;
  * @author laizhiyuan
  * @since 2019/7/19.
  */
-@Table("t_user")
 public class UserEntity {
 
     @Column("name")

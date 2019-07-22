@@ -29,7 +29,11 @@ public abstract class AbstractResultHandler implements ResultHandler {
 
         for (int i = 0; i < count; i++) {
 
-            name[i] = rsmd.getColumnName(i + 1);
+            try {
+                name[i] = rsmd.getColumnLabel(i + 1);
+            }catch (Exception ex){
+                name[i] = rsmd.getColumnName(i + 1);
+            }
         }
 
         return new ArrayList<>(Arrays.asList(name));

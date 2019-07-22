@@ -218,6 +218,7 @@ public class SqlSessionTest {
 
         List<UserEntity> userEntities = userMapper.findByParams(ids, "lazy", 3000000);
 
+        System.out.println(JSON.toJSONString(userEntities));
         System.out.println(userEntities.size());
 //        System.out.println(JSON.toJSONString(userEntities));
     }

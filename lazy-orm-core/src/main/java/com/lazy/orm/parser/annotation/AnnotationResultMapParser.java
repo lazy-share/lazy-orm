@@ -38,16 +38,18 @@ public class AnnotationResultMapParser extends AbstractResultMapParser {
         int idx = 0;
         for (Field field : fields) {
             ResultMap.ResultMeta resultMeta = new ResultMap.ResultMeta();
+            String fieldName = field.getName();
+            String columnName = fieldName;
             Column column = field.getAnnotation(Column.class);
-            if (column == null) {
-                continue;
+            if (column != null) {
+                columnName = column.value();
             }
             resultMeta
-                    .setName(field.getName())
-                    .setColumn(column.value())
+                    .setName(fieldName)
+                    .setColumn(columnName)
                     .setIdx(idx++)
                     .setTypeHandler(TypeHandlerFactory.of(field.getType()));
-            resultMap.addMeta(column.value(), resultMeta);
+            resultMap.addMeta(columnName, resultMeta);
         }
 
         return resultMap;
