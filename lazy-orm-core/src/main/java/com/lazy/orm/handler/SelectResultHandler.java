@@ -59,7 +59,10 @@ public class SelectResultHandler extends AbstractResultHandler {
                 if (list.size() > 1) {
                     throw new SingleRowException("返回结果包含多条数据");
                 }
-                return (T) list.get(0);
+                if (list.size() > 0) {
+                    return (T) list.get(0);
+                }
+                return null;
             }
             return (T) list;
         } catch (Exception ex) {

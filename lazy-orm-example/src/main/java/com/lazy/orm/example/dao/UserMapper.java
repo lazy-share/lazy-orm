@@ -4,8 +4,10 @@ import com.lazy.orm.annotation.DmlType;
 import com.lazy.orm.annotation.Mapper;
 import com.lazy.orm.annotation.Param;
 import com.lazy.orm.annotation.Sql;
+import com.lazy.orm.example.dto.QueryUserDto;
 import com.lazy.orm.example.entity.UserEntity;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 /**
@@ -66,6 +68,44 @@ public interface UserMapper {
     )
     int insert(UserEntity entity);
 
+    @Sql(
+            value = "delete from t_user",
+            dmlType = DmlType.DELETE
+    )
+    int deleteAll();
+
+
+    @Sql(
+            value = "select * from t_user where name like #{name} and id in (#{ids}) and age < #{age}",
+            itemType = UserEntity.class
+    )
+    List<UserEntity> findByDto(QueryUserDto dto);
+
+    @Sql(
+            value = "select * from t_user where name like #{name} and id in (#{ids}) and age < #{age}",
+            itemType = UserEntity.class
+    )
+    List<UserEntity> findByParams(@Param("ids") List<Long> ids,
+                                  @Param("name") String name,
+                                  @Param("age") int age);
+
+
+    @Sql(
+            value = "update t_user set create_time = #{createTime} where id in (#{ids}) and name like #{name} and age < #{age}",
+            dmlType = DmlType.UPDATE
+    )
+    int updateByDto(QueryUserDto dto);
+
+    @Sql(
+            value = "update t_user set create_time = #{createTime} where id in (#{ids}) and name like #{name} and age < #{age}",
+            dmlType = DmlType.UPDATE
+    )
+    int updateByParams(@Param("ids") List<Long> ids,
+                       @Param("name") String name,
+                       @Param("createTime") Timestamp createTime,
+                       @Param("age") int age);
+
+
     /**
      * 更新一条数据
      *
@@ -100,6 +140,6 @@ public interface UserMapper {
             value = "delete from t_user where id in (#{ids})",
             dmlType = DmlType.DELETE
     )
-    int batDel(@Param("ids") String ids);
+    int batDel(@Param("ids") List<Long> ids);
 
 }

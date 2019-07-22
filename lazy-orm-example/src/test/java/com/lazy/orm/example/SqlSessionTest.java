@@ -15,6 +15,7 @@ import javax.sql.DataSource;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
@@ -42,16 +43,37 @@ public class SqlSessionTest {
     }
 
     @Test
-    public void testBatDelete(){
+    public void initTestData() {
+        int count = 10000000;
         UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
-        int count = userMapper.batDel("10,11");
+        userMapper.deleteAll();
+        while (count-- > 0) {
+            userMapper.insert(
+                    new UserEntity()
+                            .setAge(count)
+                            .setSalary(new BigDecimal(String.valueOf(count)))
+                            .setCreateTime(new Timestamp(System.currentTimeMillis()))
+                            .setId((long) count)
+                            .setName("lazy" + count)
+            );
+        }
+        sqlSession.commit();
+    }
+
+    @Test
+    public void testBatDelete() {
+        UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
+        List<Long> ids = new ArrayList<>();
+        ids.add(1L);
+        ids.add(2L);
+        int count = userMapper.batDel(ids);
 
         sqlSession.commit();
         System.out.println(count);
     }
 
     @Test
-    public void testDelete(){
+    public void testDelete() {
         UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
         int count = userMapper.delete(15L);
 
@@ -60,7 +82,7 @@ public class SqlSessionTest {
     }
 
     @Test
-    public void testUpdate(){
+    public void testUpdate() {
         UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
         int count = userMapper.update(
                 new UserEntity()
@@ -81,9 +103,9 @@ public class SqlSessionTest {
         int count = userMapper.insert(
                 new UserEntity()
                         .setAge(100)
-                        .setSalary(new BigDecimal("1009"))
+                        .setSalary(new BigDecimal("3"))
                         .setCreateTime(new Timestamp(System.currentTimeMillis()))
-                        .setId(15L)
+                        .setId(3L)
                         .setName("wangnwu")
         );
 
@@ -92,6 +114,50 @@ public class SqlSessionTest {
 
 //        UserEntity userEntity = userMapper.selectByPk(10L);
 //        System.out.println(JSON.toJSONString(userEntity));
+    }
+
+    @Test
+    public void testUpdate2() {
+        UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
+        List<Long> ids = new ArrayList<>();
+        int count = 30000;
+        while (count-- > 0) {
+            ids.add((long) count);
+        }
+//        long success = userMapper.updateByDto(
+//                new QueryUserDto()
+//                .setIds(ids)
+//                .setName("lazy")
+//                .setAge(30000)
+//                .setCreateTime(new Timestamp(System.currentTimeMillis() - 100000))
+//        );
+
+        long success = userMapper.updateByParams(
+                ids, "lazy", new Timestamp(System.currentTimeMillis() - 1000000000), 30000
+        );
+
+        sqlSession.commit();
+        System.out.println(success);
+    }
+
+    @Test
+    public void testSelect2() {
+        UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
+        List<Long> ids = new ArrayList<>();
+        int count = 30000;
+        while (count-- > 0) {
+            ids.add((long) count);
+        }
+//        List<UserEntity> userEntities = userMapper.findByDto(new QueryUserDto()
+//                .setAge(100000)
+//                .setName("lazy")
+//                .setIds(ids)
+//        );
+
+        List<UserEntity> userEntities = userMapper.findByParams(ids, "lazy", 30000);
+
+        System.out.println(userEntities.size());
+//        System.out.println(JSON.toJSONString(userEntities));
     }
 
 

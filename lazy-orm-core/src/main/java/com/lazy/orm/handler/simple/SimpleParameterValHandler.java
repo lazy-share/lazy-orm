@@ -9,6 +9,10 @@ import java.sql.Time;
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.TreeSet;
 
 /**
  * <p>
@@ -22,20 +26,28 @@ public class SimpleParameterValHandler extends AbstractParameterValHandler {
 
     @Override
     protected Object doGetVal(Object parameter, String fieldName) {
-        if (String.class.equals(parameter.getClass())
-                || Integer.class.equals(parameter.getClass())
-                || Long.class.equals(parameter.getClass())
-                || BigDecimal.class.equals(parameter.getClass())
-                || Byte.class.equals(parameter.getClass())
-                || Time.class.equals(parameter.getClass())
-                || Timestamp.class.equals(parameter.getClass())
-                || Date.class.equals(parameter.getClass())
-                || java.util.Date.class.equals(parameter.getClass())
-                || LocalDateTime.class.equals(parameter.getClass())
-                || LocalDate.class.equals(parameter.getClass())
-        ) {
+
+        Class<?> theCls = parameter.getClass();
+        if (String.class.equals(theCls)
+                || Integer.class.equals(theCls)
+                || Long.class.equals(theCls)
+                || BigDecimal.class.equals(theCls)
+                || Byte.class.equals(theCls)
+                || Time.class.equals(theCls)
+                || Timestamp.class.equals(theCls)
+                || Date.class.equals(theCls)
+                || java.util.Date.class.equals(theCls)
+                || LocalDateTime.class.equals(theCls)
+                || LocalDate.class.equals(theCls)
+                || ArrayList.class.equals(theCls)
+                || (LinkedList.class.equals(theCls))
+                || (HashSet.class.equals(theCls))
+                || (TreeSet.class.equals(theCls))) {
+
             return parameter;
+        } else {
+
+            return ReflectionUtil.getValueByFieldName(fieldName, theCls, parameter);
         }
-        return ReflectionUtil.getValueByFieldName(fieldName, parameter.getClass(), parameter);
     }
 }

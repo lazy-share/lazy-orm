@@ -15,39 +15,6 @@ import java.util.Map;
  */
 public class SqlSource {
 
-    public static class Placeholder {
-        private String name;
-        private Integer idx;
-        private boolean like = false;
-
-        public String getName() {
-            return name;
-        }
-
-        public Placeholder setName(String name) {
-            this.name = name;
-            return this;
-        }
-
-        public Integer getIdx() {
-            return idx;
-        }
-
-        public Placeholder setIdx(Integer idx) {
-            this.idx = idx;
-            return this;
-        }
-
-        public boolean isLike() {
-            return like;
-        }
-
-        public Placeholder setLike(boolean like) {
-            this.like = like;
-            return this;
-        }
-    }
-
     private String sql;
     private DmlType dmlType;
     private Map<String, Placeholder> placeholder = new HashMap<>();

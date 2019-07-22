@@ -2,6 +2,8 @@ package com.lazy.orm.parser.annotation;
 
 import com.lazy.orm.annotation.Param;
 import com.lazy.orm.mapper.ParameterMap;
+import com.lazy.orm.mapper.ParameterMeta;
+import com.lazy.orm.mapper.Placeholder;
 import com.lazy.orm.mapper.SqlSource;
 import com.lazy.orm.parser.support.AbstractParameterMapParser;
 import com.lazy.orm.type.TypeHandlerFactory;
@@ -33,19 +35,20 @@ public class AnnotationParameterMapParser extends AbstractParameterMapParser {
         for (Parameter parameter : parameters) {
             Param param = parameter.getAnnotation(Param.class);
             if (param == null) {
-                this.parserObjectParameter(parameterMap, method.getParameterTypes()[pIdx -1]);
-                break;
+
+                this.parserObjectParameter(parameterMap, method.getParameterTypes()[pIdx - 1]);
+            } else {
+
+                String name = param.value();
+                Placeholder placeholder = sqlSource.getPlaceholder(name);
+                parameterMap.addParameterMeta(name,
+                        new ParameterMeta()
+                                .setName(name)
+                                .setType(parameter.getType())
+                                .setPlaceholder(placeholder)
+                                .setParamIdx(pIdx++)
+                                .setTypeHandler(TypeHandlerFactory.of(parameter.getType())));
             }
-            String name = param.value();
-            SqlSource.Placeholder placeholder = sqlSource.getPlaceholder(name);
-            parameterMap.addParameterMeta(name,
-                    new ParameterMap.ParameterMeta()
-                            .setPlaceholderIdx(placeholder.getIdx())
-                            .setParamIdx(pIdx++)
-                            .setName(name)
-                            .setLike(placeholder.isLike())
-                            .setType(parameter.getType())
-                            .setTypeHandler(TypeHandlerFactory.of(parameter.getType())));
         }
         return parameterMap;
     }
@@ -54,17 +57,16 @@ public class AnnotationParameterMapParser extends AbstractParameterMapParser {
     private void parserObjectParameter(ParameterMap parameterMap, Class cls) {
         Field[] fields = cls.getDeclaredFields();
         for (Field field : fields) {
-            SqlSource.Placeholder p = sqlSource.getPlaceholder(field.getName());
-            if (p == null) {
+            Placeholder placeholder = sqlSource.getPlaceholder(field.getName());
+            if (placeholder == null) {
                 continue;
             }
-            parameterMap.addParameterMeta(p.getName(),
-                    new ParameterMap.ParameterMeta()
-                            .setPlaceholderIdx(p.getIdx())
-                            .setParamIdx(1)
-                            .setName(p.getName())
-                            .setLike(p.isLike())
+            parameterMap.addParameterMeta(placeholder.getName(),
+                    new ParameterMeta()
+                            .setName(placeholder.getName())
                             .setType(cls)
+                            .setParamIdx(1)
+                            .setPlaceholder(placeholder)
                             .setTypeHandler(TypeHandlerFactory.of(cls)));
         }
 
