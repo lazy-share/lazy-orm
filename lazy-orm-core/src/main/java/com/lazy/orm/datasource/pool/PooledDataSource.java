@@ -5,6 +5,7 @@ import com.lazy.orm.common.Log;
 import com.lazy.orm.common.LogFactory;
 import com.lazy.orm.datasource.simple.SimpleDataSource;
 import com.lazy.orm.datasource.support.AbstractDataSource;
+import com.lazy.orm.exception.ConnectionPoolException;
 import com.lazy.orm.util.StringUtil;
 
 import javax.sql.DataSource;
@@ -93,6 +94,9 @@ public class PooledDataSource extends AbstractDataSource {
 
                         //拿出最早活动的那条链接
                         PoolProxyConnection firstOldConnection = state.getActiveConnections().peek();
+                        if (firstOldConnection == null){
+                            throw new ConnectionPoolException("从活动获取连接为Null");
+                        }
                         //判断如果大于签出时间,则强制失效,回滚连接
                         if (firstOldConnection.getCheckoutTimestamp() > maxCheckoutTime) {
 
@@ -137,6 +141,8 @@ public class PooledDataSource extends AbstractDataSource {
                         connection.setLastUsedTimestamp(System.currentTimeMillis());
                         state.getActiveConnections().push(connection);
                     }
+                }else {
+                    log.error("获取连接为Null");
                 }
             }
         }
