@@ -2,7 +2,6 @@ package com.lazy.orm.example;
 
 import com.alibaba.fastjson.JSON;
 import com.lazy.orm.datasource.pool.PooledDataSourceFactory;
-import com.lazy.orm.datasource.simple.SimpleDataSourceFactory;
 import com.lazy.orm.example.dao.UserMapper;
 import com.lazy.orm.example.entity.UserEntity;
 import com.lazy.orm.io.Resources;
@@ -42,87 +41,6 @@ public class UserMapperTest {
                 .addMapper(UserMapper.class);
 
         sqlSession = SqlSessionFactoryBuilder.build(configuration).openSession();
-    }
-
-    @Test
-    public void initTestData() throws InterruptedException {
-        UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
-        userMapper.deleteAll();
-        AtomicInteger count = new AtomicInteger(0);
-        new Thread(() -> {
-            while (count.getAndAdd(1) < 1000000) {
-                userMapper.insert(
-                        new UserEntity()
-                                .setAge(count.get())
-                                .setSalary(new BigDecimal(String.valueOf(count.get())))
-                                .setCreateTime(new Timestamp(System.currentTimeMillis()))
-                                .setId((long) count.get())
-                                .setName("lazy" + count.get())
-                );
-            }
-            sqlSession.commit();
-        }).start();
-
-        new Thread(() -> {
-            while (count.getAndAdd(1) < 1000000) {
-                userMapper.insert(
-                        new UserEntity()
-                                .setAge(count.get())
-                                .setSalary(new BigDecimal(String.valueOf(count.get())))
-                                .setCreateTime(new Timestamp(System.currentTimeMillis()))
-                                .setId((long) count.get())
-                                .setName("lazy" + count.get())
-                );
-            }
-            sqlSession.commit();
-        }).start();
-
-        new Thread(() -> {
-            while (count.getAndAdd(1) < 1000000) {
-                userMapper.insert(
-                        new UserEntity()
-                                .setAge(count.get())
-                                .setSalary(new BigDecimal(String.valueOf(count.get())))
-                                .setCreateTime(new Timestamp(System.currentTimeMillis()))
-                                .setId((long) count.get())
-                                .setName("lazy" + count.get())
-                );
-            }
-            sqlSession.commit();
-        }).start();
-
-        new Thread(() -> {
-            while (count.getAndAdd(1) < 1000000) {
-                userMapper.insert(
-                        new UserEntity()
-                                .setAge(count.get())
-                                .setSalary(new BigDecimal(String.valueOf(count.get())))
-                                .setCreateTime(new Timestamp(System.currentTimeMillis()))
-                                .setId((long) count.get())
-                                .setName("lazy" + count.get())
-                );
-            }
-            sqlSession.commit();
-        }).start();
-
-        new Thread(() -> {
-            while (count.getAndAdd(1) < 1000000) {
-                userMapper.insert(
-                        new UserEntity()
-                                .setAge(count.get())
-                                .setSalary(new BigDecimal(String.valueOf(count.get())))
-                                .setCreateTime(new Timestamp(System.currentTimeMillis()))
-                                .setId((long) count.get())
-                                .setName("lazy" + count.get())
-                );
-            }
-            sqlSession.commit();
-        }).start();
-
-
-        while (count.get() <= 1000000){
-            Thread.sleep(10000000);
-        }
     }
 
     @Test
@@ -241,5 +159,86 @@ public class UserMapperTest {
 //
         userEntity = userMapper.selectByPk(1L);
         System.out.println(JSON.toJSONString(userEntity));
+    }
+
+    @Test
+    public void initTestData() throws InterruptedException {
+        UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
+        userMapper.deleteAll();
+        AtomicInteger count = new AtomicInteger(0);
+        new Thread(() -> {
+            while (count.getAndAdd(1) < 1000000) {
+                userMapper.insert(
+                        new UserEntity()
+                                .setAge(count.get())
+                                .setSalary(new BigDecimal(String.valueOf(count.get())))
+                                .setCreateTime(new Timestamp(System.currentTimeMillis()))
+                                .setId((long) count.get())
+                                .setName("lazy" + count.get())
+                );
+            }
+            sqlSession.commit();
+        }).start();
+
+        new Thread(() -> {
+            while (count.getAndAdd(1) < 1000000) {
+                userMapper.insert(
+                        new UserEntity()
+                                .setAge(count.get())
+                                .setSalary(new BigDecimal(String.valueOf(count.get())))
+                                .setCreateTime(new Timestamp(System.currentTimeMillis()))
+                                .setId((long) count.get())
+                                .setName("lazy" + count.get())
+                );
+            }
+            sqlSession.commit();
+        }).start();
+
+        new Thread(() -> {
+            while (count.getAndAdd(1) < 1000000) {
+                userMapper.insert(
+                        new UserEntity()
+                                .setAge(count.get())
+                                .setSalary(new BigDecimal(String.valueOf(count.get())))
+                                .setCreateTime(new Timestamp(System.currentTimeMillis()))
+                                .setId((long) count.get())
+                                .setName("lazy" + count.get())
+                );
+            }
+            sqlSession.commit();
+        }).start();
+
+        new Thread(() -> {
+            while (count.getAndAdd(1) < 1000000) {
+                userMapper.insert(
+                        new UserEntity()
+                                .setAge(count.get())
+                                .setSalary(new BigDecimal(String.valueOf(count.get())))
+                                .setCreateTime(new Timestamp(System.currentTimeMillis()))
+                                .setId((long) count.get())
+                                .setName("lazy" + count.get())
+                );
+            }
+            sqlSession.commit();
+        }).start();
+
+        new Thread(() -> {
+            while (count.getAndAdd(1) < 1000000) {
+                userMapper.insert(
+                        new UserEntity()
+                                .setAge(count.get())
+                                .setSalary(new BigDecimal(String.valueOf(count.get())))
+                                .setCreateTime(new Timestamp(System.currentTimeMillis()))
+                                .setId((long) count.get())
+                                .setName("lazy" + count.get())
+                );
+            }
+            sqlSession.commit();
+        }).start();
+
+
+        while (count.get() <= 1000000) {
+            Thread.sleep(10000000);
+        }
     }
 }

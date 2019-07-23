@@ -1,23 +1,20 @@
 package com.lazy.orm.annotation;
 
 import java.lang.annotation.*;
-import java.util.Collection;
 
 /**
  * <p>
- * Sql 注解
+ *     表注解
  * </p>
  *
  * @author laizhiyuan
- * @since 2019/7/19.
+ * @since 2019/7/23.
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
-@Target(ElementType.METHOD)
-public @interface Sql {
+@Target(ElementType.TYPE)
+public @interface Table {
 
     String value();
-
-    Class<?> itemType() default Collection.class;
 
 }

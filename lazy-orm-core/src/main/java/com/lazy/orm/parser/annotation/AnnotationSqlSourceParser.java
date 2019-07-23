@@ -1,5 +1,6 @@
 package com.lazy.orm.parser.annotation;
 
+import com.lazy.orm.annotation.DmlType;
 import com.lazy.orm.annotation.Sql;
 import com.lazy.orm.exception.ParserException;
 import com.lazy.orm.mapper.Placeholder;
@@ -27,8 +28,8 @@ public class AnnotationSqlSourceParser extends AbstractSqlSourceParser {
         Sql sql = method.getAnnotation(Sql.class);
         String sqlStr = sql.value();
         SqlSource sqlSource = new SqlSource();
-        sqlSource.setDmlType(sql.dmlType())
-                .setSql(sqlStr);
+        sqlSource.setSql(sqlStr);
+        sqlSource.setDmlType(DmlType.of(sqlSource.getSql()));
 
         String openStr = "#{";
         if (!sqlStr.contains(openStr)) {
