@@ -34,7 +34,6 @@ public class PoolProxyConnection implements InvocationHandler {
     private long lastUsedTimestamp;
     protected String pingStatement = "Please Config A Ping Sql Statement";
     private boolean valid;
-    private boolean poolPingEnabled = true;
     private long pingIntervalTime = 10000 * 1000;
 
     private static Log log = LogFactory.getLog(PoolProxyConnection.class);
@@ -89,7 +88,6 @@ public class PoolProxyConnection implements InvocationHandler {
 
     protected boolean pingConnection(PoolProxyConnection conn) {
 
-        log.info("检查连接是否存活");
         boolean result;
 
         try {
@@ -99,7 +97,7 @@ public class PoolProxyConnection implements InvocationHandler {
         }
 
         if (result) {
-            if (poolPingEnabled) {
+            if (dataSource.poolPingEnabled) {
                 if (conn.getTimeForNotUse() > pingIntervalTime) {
 
                     log.info("检查连接是否存活, ping....");

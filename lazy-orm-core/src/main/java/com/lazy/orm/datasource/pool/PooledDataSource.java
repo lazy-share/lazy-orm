@@ -28,6 +28,7 @@ public class PooledDataSource extends AbstractDataSource {
     protected long maxIdleCount = 5;
     protected long maxWaitTime = 20000;
     protected long maxCheckoutTime = 20000;
+    protected boolean poolPingEnabled = true;
     protected String pingStatement = "Please Config A Ping Sql Statement";
 
 
@@ -42,6 +43,8 @@ public class PooledDataSource extends AbstractDataSource {
         if (StringUtil.hasText(maxActiveCountConfig)){
             this.maxActiveCount = Long.valueOf(maxActiveCountConfig);
         }
+        this.poolPingEnabled = (boolean) properties.getOrDefault("poolPingEnabled", true);
+
         String maxWaitTimeConfig = properties.getProperty("maxWaitTime");
         if (StringUtil.hasText(maxWaitTimeConfig)){
             this.maxWaitTime = Long.valueOf(maxWaitTimeConfig);
@@ -58,6 +61,8 @@ public class PooledDataSource extends AbstractDataSource {
                 + this.maxWaitTime
                 + "\n maxCheckoutTime:"
                 + this.maxCheckoutTime
+                + "\n poolPingEnabled:"
+                + this.poolPingEnabled
         );
 
     }
