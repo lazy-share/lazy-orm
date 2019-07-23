@@ -1,12 +1,16 @@
 package com.lazy.orm.datasource.pool;
 
 
+import com.lazy.orm.common.Log;
+import com.lazy.orm.common.LogFactory;
 import com.lazy.orm.exception.ConnectionPoolException;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.sql.Connection;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 /**
  * <p>
@@ -28,7 +32,12 @@ public class PoolProxyConnection implements InvocationHandler {
     private long checkoutTimestamp;
     private long createdTimestamp;
     private long lastUsedTimestamp;
+    protected String pingStatement = "Please Config A Ping Sql Statement";
     private boolean valid;
+    private boolean poolPingEnabled = true;
+    private long pingIntervalTime = 10000 * 1000;
+
+    private static Log log = LogFactory.getLog(PoolProxyConnection.class);
 
     public PoolProxyConnection(Connection realConnection, PooledDataSource dataSource) {
         this.realConnection = realConnection;
@@ -71,7 +80,63 @@ public class PoolProxyConnection implements InvocationHandler {
     }
 
     public boolean isValid() {
-        return valid;
+        return valid && pingConnection(this);
+    }
+
+    public long getTimeForNotUse() {
+        return System.currentTimeMillis() - lastUsedTimestamp;
+    }
+
+    protected boolean pingConnection(PoolProxyConnection conn) {
+
+        log.info("检查连接是否存活");
+        boolean result;
+
+        try {
+            result = !conn.getRealConnection().isClosed();
+        } catch (SQLException e) {
+            result = false;
+        }
+
+        if (result) {
+            if (poolPingEnabled) {
+                if (conn.getTimeForNotUse() > pingIntervalTime) {
+
+                    log.info("检查连接是否存活, ping....");
+                    try {
+                        Connection realConn = conn.getRealConnection();
+                        try (Statement statement = realConn.createStatement()) {
+                            statement.executeQuery(pingStatement).close();
+                        }
+                        if (!realConn.getAutoCommit()) {
+                            realConn.rollback();
+                        }
+                        result = true;
+
+                        log.info("检查连接是否存活, ping ok");
+                    } catch (Exception e) {
+
+                        log.warn("连接ping失败 ping sql: " + this.pingStatement);
+                        try {
+                            conn.getRealConnection().close();
+                        } catch (Exception e2) {
+                            //ignore
+                        }
+                        result = false;
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
+    public String getPingStatement() {
+        return pingStatement;
+    }
+
+    public PoolProxyConnection setPingStatement(String pingStatement) {
+        this.pingStatement = pingStatement;
+        return this;
     }
 
     public PoolProxyConnection setValid(boolean valid) {
@@ -84,7 +149,7 @@ public class PoolProxyConnection implements InvocationHandler {
     }
 
     public long getCheckoutTimestamp() {
-        return checkoutTimestamp;
+        return System.currentTimeMillis() - checkoutTimestamp;
     }
 
     public PoolProxyConnection setCheckoutTimestamp(long checkoutTimestamp) {
@@ -108,5 +173,9 @@ public class PoolProxyConnection implements InvocationHandler {
     public PoolProxyConnection setLastUsedTimestamp(long lastUsedTimestamp) {
         this.lastUsedTimestamp = lastUsedTimestamp;
         return this;
+    }
+
+    public Connection getRealConnection() {
+        return realConnection;
     }
 }

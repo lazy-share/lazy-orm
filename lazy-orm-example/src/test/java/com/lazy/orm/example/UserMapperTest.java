@@ -1,6 +1,7 @@
 package com.lazy.orm.example;
 
 import com.alibaba.fastjson.JSON;
+import com.lazy.orm.datasource.pool.PooledDataSourceFactory;
 import com.lazy.orm.datasource.simple.SimpleDataSourceFactory;
 import com.lazy.orm.example.dao.UserMapper;
 import com.lazy.orm.example.entity.UserEntity;
@@ -31,7 +32,7 @@ public class UserMapperTest {
     public void before() throws IOException {
         //数据源获取
         Properties props = Resources.getResourceAsProperties("lazyorm.properties");
-        DataSource ds = new SimpleDataSourceFactory().setProperties(props).getDataSource();
+        DataSource ds = new PooledDataSourceFactory().setProperties(props).getDataSource();
 
         //Sql会话
         Configuration configuration = new Configuration()
@@ -44,7 +45,7 @@ public class UserMapperTest {
     }
 
     @Test
-    public void initTestData() {
+    public void initTestData() throws InterruptedException {
         UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
         userMapper.deleteAll();
         AtomicInteger count = new AtomicInteger(0);
@@ -120,7 +121,7 @@ public class UserMapperTest {
 
 
         while (count.get() <= 1000000){
-            System.out.println("...........................");
+            Thread.sleep(10000000);
         }
     }
 
@@ -169,7 +170,7 @@ public class UserMapperTest {
                         .setAge(100)
                         .setSalary(new BigDecimal("3"))
                         .setCreateTime(new Timestamp(System.currentTimeMillis()))
-                        .setId(3L)
+                        .setId((long) (Math.random() * 10000000))
                         .setName("wangnwu")
         );
 

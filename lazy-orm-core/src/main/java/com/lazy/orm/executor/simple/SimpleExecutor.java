@@ -30,11 +30,11 @@ public class SimpleExecutor extends AbstractExecutor {
     @Override
     @SuppressWarnings("unchecked")
     public <T> T execute(MappedStatement statement, Object[] params) {
+
+        Connection connection = null;
         try {
 
-
-            Connection connection = tx.getConnection();
-
+            connection = tx.getConnection();
             ParameterMap parameterMap = statement.getParameterMap();
             Map<String, ParameterMeta> parameterMetas = parameterMap.getParameterMetas();
             Map<String, ParameterMeta> finalParameterMetas = new HashMap<>();
@@ -120,6 +120,14 @@ public class SimpleExecutor extends AbstractExecutor {
             }
         } catch (Exception e) {
             throw new ExecutorException("执行结果异常", e);
+        } finally {
+            try {
+                if (connection != null && connection.getAutoCommit()) {
+                    tx.close();
+                }
+            } catch (SQLException e) {
+                log.error("关闭事务异常", e);
+            }
         }
     }
 

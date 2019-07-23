@@ -15,8 +15,7 @@ public class UpdateResultHandler extends AbstractResultHandler {
 
 
     @Override
-    @SuppressWarnings({"unchecked"})
-    public <T> T handlerResult(ResultSetContext context) {
+    protected <T> T doHandlerResult(ResultSetContext context) {
         try {
             return (T) Integer.valueOf(context.getStmt().getUpdateCount());
         } catch (Exception e) {

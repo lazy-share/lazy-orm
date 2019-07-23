@@ -25,12 +25,11 @@ public class SelectResultHandler extends AbstractResultHandler {
 
 
     @Override
-    @SuppressWarnings({"unchecked"})
-    public <T> T handlerResult(ResultSetContext context) {
+    protected <T> T doHandlerResult(ResultSetContext context) {
 
-
+        ResultSet rs = null;
         try {
-            ResultSet rs = context.getStmt().getResultSet();
+            rs = context.getStmt().getResultSet();
             MappedStatement statement = context.getStatement();
             ResultMap resultMap = statement.getResultMap();
             Map<String, ResultMap.ResultMeta> resultMetas = resultMap.getResultMetas();

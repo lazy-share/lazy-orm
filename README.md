@@ -230,7 +230,7 @@ public class UserMapperTest {
     public void before() throws IOException {
         //数据源获取
         Properties props = Resources.getResourceAsProperties("lazyorm.properties");
-        DataSource ds = new SimpleDataSourceFactory().setProperties(props).getDataSource();
+        DataSource ds = new PooledDataSourceFactory().setProperties(props).getDataSource();
 
         //Sql会话
         Configuration configuration = new Configuration()

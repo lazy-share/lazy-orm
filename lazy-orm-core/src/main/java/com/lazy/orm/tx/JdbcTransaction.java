@@ -89,6 +89,7 @@ public class JdbcTransaction implements Transaction {
                 log.debug("Closing JDBC Connection [" + connection + "]");
             }
             connection.close();
+            connection = null;
         }
     }
 
