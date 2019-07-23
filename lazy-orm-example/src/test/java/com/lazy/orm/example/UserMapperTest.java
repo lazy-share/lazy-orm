@@ -1,7 +1,6 @@
 package com.lazy.orm.example;
 
 import com.alibaba.fastjson.JSON;
-import com.lazy.orm.datasource.pool.PooledDataSourceFactory;
 import com.lazy.orm.example.dao.UserMapper;
 import com.lazy.orm.example.entity.UserEntity;
 import com.lazy.orm.io.Resources;
@@ -11,7 +10,6 @@ import com.lazy.orm.session.SqlSessionFactoryBuilder;
 import org.junit.Before;
 import org.junit.Test;
 
-import javax.sql.DataSource;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
@@ -31,14 +29,9 @@ public class UserMapperTest {
     public void before() throws IOException {
         //数据源获取
         Properties props = Resources.getResourceAsProperties("lazyorm.properties");
-        DataSource ds = new PooledDataSourceFactory().setProperties(props).getDataSource();
 
         //Sql会话
-        Configuration configuration = new Configuration()
-                //数据源
-                .setDataSource(ds)
-                //Mapper
-                .addMapper(UserMapper.class);
+        Configuration configuration = new Configuration(props);
 
         sqlSession = SqlSessionFactoryBuilder.build(configuration).openSession();
     }

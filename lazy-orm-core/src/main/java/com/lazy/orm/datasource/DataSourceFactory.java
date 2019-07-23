@@ -1,6 +1,7 @@
 package com.lazy.orm.datasource;
 
 import javax.sql.DataSource;
+import java.util.Properties;
 
 /**
  * <p>
@@ -13,5 +14,7 @@ import javax.sql.DataSource;
 public interface DataSourceFactory {
 
     DataSource getDataSource();
+
+    void setProperties(Properties properties);
 
 }

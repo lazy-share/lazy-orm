@@ -17,9 +17,9 @@ public class SimpleDataSourceFactory implements DataSourceFactory {
 
     private Properties properties;
 
-    public SimpleDataSourceFactory setProperties(Properties properties) {
+    @Override
+    public void setProperties(Properties properties) {
         this.properties = properties;
-        return this;
     }
 
     @Override

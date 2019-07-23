@@ -13,9 +13,9 @@ public class PooledDataSourceFactory implements DataSourceFactory {
 
     private Properties properties;
 
-    public PooledDataSourceFactory setProperties(Properties properties) {
+    @Override
+    public void setProperties(Properties properties) {
         this.properties = properties;
-        return this;
     }
 
     @Override

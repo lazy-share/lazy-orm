@@ -43,7 +43,6 @@ public class UserEntity {
 ```$xslt
 package com.lazy.orm.example.dao;
 
-import com.lazy.orm.annotation.DmlType;
 import com.lazy.orm.annotation.Mapper;
 import com.lazy.orm.annotation.Param;
 import com.lazy.orm.annotation.Sql;
@@ -112,14 +111,12 @@ public interface UserMapper {
      */
     @Sql(
             value = "insert into t_user (id, name, age, salary, create_time) values (" +
-                    "#{id}, #{name}, #{age}, #{salary}, #{createTime})",
-            dmlType = DmlType.INSERT
+                    "#{id}, #{name}, #{age}, #{salary}, #{createTime})"
     )
     int insert(UserEntity entity);
 
     @Sql(
-            value = "delete from t_user",
-            dmlType = DmlType.DELETE
+            value = "delete from t_user"
     )
     int deleteAll();
 
@@ -140,14 +137,12 @@ public interface UserMapper {
 
 
     @Sql(
-            value = "update t_user set create_time = #{createTime} where id in (#{ids}) and name like #{name} and age < #{age}",
-            dmlType = DmlType.UPDATE
+            value = "update t_user set create_time = #{createTime} where id in (#{ids}) and name like #{name} and age < #{age}"
     )
     int updateByDto(QueryUserDto dto);
 
     @Sql(
-            value = "update t_user set create_time = #{createTime} where id in (#{ids}) and name like #{name} and age < #{age}",
-            dmlType = DmlType.UPDATE
+            value = "update t_user set create_time = #{createTime} where id in (#{ids}) and name like #{name} and age < #{age}"
     )
     int updateByParams(@Param("ids") List<Long> ids,
                        @Param("name") String name,
@@ -162,8 +157,7 @@ public interface UserMapper {
      * @return 成功条数
      */
     @Sql(
-            value = "update t_user set name = #{name} where id = #{id}",
-            dmlType = DmlType.UPDATE
+            value = "update t_user set name = #{name} where id = #{id}"
     )
     int update(UserEntity entity);
 
@@ -174,8 +168,7 @@ public interface UserMapper {
      * @return 成功条数
      */
     @Sql(
-            value = "delete from t_user where id = #{id}",
-            dmlType = DmlType.DELETE
+            value = "delete from t_user where id = #{id}"
     )
     int delete(@Param("id") Long id);
 
@@ -186,12 +179,12 @@ public interface UserMapper {
      * @return 成功条数
      */
     @Sql(
-            value = "delete from t_user where id in (#{ids})",
-            dmlType = DmlType.DELETE
+            value = "delete from t_user where id in (#{ids})"
     )
     int batDel(@Param("ids") List<Long> ids);
 
 }
+
 
 ```
 
@@ -201,7 +194,6 @@ public interface UserMapper {
 package com.lazy.orm.example;
 
 import com.alibaba.fastjson.JSON;
-import com.lazy.orm.datasource.pool.PooledDataSourceFactory;
 import com.lazy.orm.example.dao.UserMapper;
 import com.lazy.orm.example.entity.UserEntity;
 import com.lazy.orm.io.Resources;
@@ -211,7 +203,6 @@ import com.lazy.orm.session.SqlSessionFactoryBuilder;
 import org.junit.Before;
 import org.junit.Test;
 
-import javax.sql.DataSource;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
@@ -231,14 +222,9 @@ public class UserMapperTest {
     public void before() throws IOException {
         //数据源获取
         Properties props = Resources.getResourceAsProperties("lazyorm.properties");
-        DataSource ds = new PooledDataSourceFactory().setProperties(props).getDataSource();
 
         //Sql会话
-        Configuration configuration = new Configuration()
-                //数据源
-                .setDataSource(ds)
-                //Mapper
-                .addMapper(UserMapper.class);
+        Configuration configuration = new Configuration(props);
 
         sqlSession = SqlSessionFactoryBuilder.build(configuration).openSession();
     }
@@ -442,6 +428,7 @@ public class UserMapperTest {
         }
     }
 }
+
 
 
 ```

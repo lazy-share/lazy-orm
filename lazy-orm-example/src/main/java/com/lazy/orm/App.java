@@ -1,6 +1,5 @@
 package com.lazy.orm;
 
-import com.lazy.orm.datasource.pool.PooledDataSourceFactory;
 import com.lazy.orm.example.dao.UserMapper;
 import com.lazy.orm.example.entity.UserEntity;
 import com.lazy.orm.io.Resources;
@@ -11,7 +10,6 @@ import com.lazy.orm.session.SqlSessionFactoryBuilder;
 import javax.sql.DataSource;
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.Properties;
 import java.util.Random;
@@ -29,14 +27,9 @@ public class App {
     public static void before() throws IOException {
         //数据源获取
         Properties props = Resources.getResourceAsProperties("lazyorm.properties");
-        ds = new PooledDataSourceFactory().setProperties(props).getDataSource();
 
         //Sql会话
-        Configuration configuration = new Configuration()
-                //数据源
-                .setDataSource(ds)
-                //Mapper
-                .addMapper(UserMapper.class);
+        Configuration configuration = new Configuration(props);
 
         sqlSession = SqlSessionFactoryBuilder.build(configuration).openSession();
     }
@@ -119,13 +112,13 @@ public class App {
     }
 
 
-    public static void testPool(){
+    public static void testPool() {
 
         Random ra = new Random();
         Runnable r = new Runnable() {
             @Override
             public void run() {
-                while (true){
+                while (true) {
                     try {
 
                         int randomCount = ra.nextInt(10000);
@@ -157,10 +150,8 @@ public class App {
         t5.start();
 
 
-
-
-
     }
+
     public static void main(String[] args) throws IOException, InterruptedException {
         before();
         testPool();
