@@ -54,6 +54,15 @@ public interface UserMapper {
     )
     UserEntity selectByPk(@Param("pk") Long pk);
 
+    @Sql(
+            value = "select * from t_user where 1=1 order by ${order1} ${sort1}, ${order2} ${sort2}",
+            itemType = UserEntity.class
+    )
+    List<UserEntity> selectByOrderBy(@Param("order1") String order1,
+                                     @Param("sort1") String sort1,
+                                     @Param("order2") String order2,
+                                     @Param("sort2") String sort2);
+
 
     @Sql(
             value = "select count(1) from t_user where name like #{name}"

@@ -52,6 +52,22 @@ public class SimpleExecutor extends AbstractExecutor {
                 log.info("parameter: #{" + meta.getName() + "} value:" + parameterVal);
                 meta.setVal(parameterVal);
 
+                if (meta.getPlaceholder().isDynamic()) {
+                    sql = sql.substring(0, meta.getPlaceholder().getCharIdx())
+                            + parameterVal + sql.substring(meta.getPlaceholder().getCharIdx() + 1);
+
+                    //将对应的后面的符号占位符索引值递增
+                    for (String pName2 : parameterMetas.keySet()) {
+                        ParameterMeta meta2 = parameterMetas.get(pName2);
+                        if (meta2.getPlaceholder().getSymbolIdx() > meta.getPlaceholder().getSymbolIdx()) {
+                            meta2.getPlaceholder().setCharIdx(meta2.getPlaceholder().getCharIdx() + parameterVal.toString().length() - 1);
+                        }
+                    }
+
+                    sqlSource.setSql(sql);
+                    continue;
+                }
+
                 if (meta.getPlaceholder().isIn()) {
                     if (!(parameterVal instanceof Iterable)) {
                         throw new ExecutorException("in 操作符参数必须实现Iterable接口");
@@ -86,7 +102,7 @@ public class SimpleExecutor extends AbstractExecutor {
 
                     inSqlSymbol = inSqlSymbol.deleteCharAt(inSqlSymbol.length() - 1);
                     sql = sql.substring(0, meta.getPlaceholder().getCharIdx()) +
-                            inSqlSymbol + sql.substring(meta.getPlaceholder().getCharIdx() + 1, sql.length());
+                            inSqlSymbol + sql.substring(meta.getPlaceholder().getCharIdx() + 1);
 
                     sqlSource.setSql(sql);
                     continue;

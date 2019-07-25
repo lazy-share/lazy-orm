@@ -37,6 +37,16 @@ public class UserMapperTest {
     }
 
     @Test
+    public void testOrderBy() {
+        UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
+        List<UserEntity> userEntityList = userMapper.selectByOrderBy(
+                "id", "desc", "age", "asc"
+        );
+        System.out.println(userEntityList.size());
+        System.out.println(JSON.toJSONString(userEntityList));
+    }
+
+    @Test
     public void testBatDelete() {
         UserMapper userMapper = sqlSession.getMapper(UserMapper.class);
         List<Long> ids = new ArrayList<>();

@@ -33,27 +33,19 @@ public class AnnotationSqlSourceParser extends AbstractSqlSourceParser {
 
         String openStr = "#{";
         if (!sqlStr.contains(openStr)) {
-            return sqlSource;
+            openStr = "${";
+            if (!sqlStr.contains(openStr)) {
+                return sqlSource;
+            }
         }
 
         int idx = 1;
-        int openOffset = sqlStr.indexOf(openStr);
         Map<Integer, String> placeholderParamIdxMap = new HashMap<>();
-        StringBuilder finalSql = new StringBuilder(sqlStr.substring(0, openOffset));
-        String endStr = "}";
-        int endOffset = sqlStr.indexOf(endStr);
-        String name = sqlStr.substring(openOffset + 2, endOffset);
-        finalSql.append("?");
-        int charIdx = finalSql.lastIndexOf("?");
-        sqlSource.putPlaceholder(name, new Placeholder()
-                .setSymbolIdx(idx++)
-                .setCharIdx(charIdx)
-                .setName(name));
-
-        placeholderParamIdxMap.put(charIdx, name);
-        char[] chars = sqlStr.substring(endOffset + 1).toCharArray();
-
+        StringBuilder finalSql = new StringBuilder();
+        int charIdx;
+        char[] chars = sqlStr.toCharArray();
         boolean find = false;
+        boolean dynamic = false;
         StringBuilder paramKey = new StringBuilder();
         for (char c : chars) {
             if (c == '}') {
@@ -63,6 +55,7 @@ public class AnnotationSqlSourceParser extends AbstractSqlSourceParser {
                 placeholderParamIdxMap.put(charIdx, paramKey.toString());
                 sqlSource.putPlaceholder(paramKey.toString(), new Placeholder()
                         .setSymbolIdx(idx++)
+                        .setDynamic(dynamic)
                         .setCharIdx(charIdx)
                         .setName(paramKey.toString()));
                 paramKey.setLength(0);
@@ -74,6 +67,11 @@ public class AnnotationSqlSourceParser extends AbstractSqlSourceParser {
             }
             if (c == '{') {
                 find = true;
+                continue;
+            }
+            dynamic = false;
+            if (c == '$') {
+                dynamic = true;
                 continue;
             }
             if (c == '#') {

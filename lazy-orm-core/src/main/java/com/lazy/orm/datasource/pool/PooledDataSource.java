@@ -43,7 +43,7 @@ public class PooledDataSource extends AbstractDataSource {
         if (StringUtil.hasText(maxActiveCountConfig)){
             this.maxActiveCount = Long.valueOf(maxActiveCountConfig);
         }
-        this.poolPingEnabled = (boolean) properties.getOrDefault("poolPingEnabled", true);
+        this.poolPingEnabled = Boolean.valueOf(properties.getOrDefault("poolPingEnabled", true).toString());
 
         String maxWaitTimeConfig = properties.getProperty("maxWaitTime");
         if (StringUtil.hasText(maxWaitTimeConfig)){

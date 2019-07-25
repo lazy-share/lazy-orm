@@ -12,9 +12,19 @@ public class Placeholder {
 
     private String name;
     private Integer symbolIdx;
+    private boolean dynamic = false;
     private Integer charIdx;
     private boolean like = false;
     private boolean in = false;
+
+    public boolean isDynamic() {
+        return dynamic;
+    }
+
+    public Placeholder setDynamic(boolean dynamic) {
+        this.dynamic = dynamic;
+        return this;
+    }
 
     public boolean isIn() {
         return in;
