@@ -17,7 +17,7 @@ public abstract class AbstractSqlSourceParser implements SqlSourceParser {
 
 
     @Override
-    public SqlSource parser(Method method) {
+    public SqlSource parserStatic(Method method) {
         return this.doParser(method);
     }
 

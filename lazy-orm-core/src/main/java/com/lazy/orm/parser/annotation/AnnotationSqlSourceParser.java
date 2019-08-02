@@ -2,10 +2,13 @@ package com.lazy.orm.parser.annotation;
 
 import com.lazy.orm.annotation.DmlType;
 import com.lazy.orm.annotation.Sql;
+import com.lazy.orm.exception.ExecutorException;
 import com.lazy.orm.exception.ParserException;
+import com.lazy.orm.mapper.ParameterMeta;
 import com.lazy.orm.mapper.Placeholder;
 import com.lazy.orm.mapper.SqlSource;
 import com.lazy.orm.parser.support.AbstractSqlSourceParser;
+import com.lazy.orm.type.TypeHandlerFactory;
 import com.lazy.orm.util.StringUtil;
 
 import java.lang.reflect.Method;
@@ -81,16 +84,16 @@ public class AnnotationSqlSourceParser extends AbstractSqlSourceParser {
         }
 
         //解析like
-        this.parserLike(sqlSource, finalSql, placeholderParamIdxMap);
+        this.parserLikePlaceholder(sqlSource, finalSql, placeholderParamIdxMap);
 
         //解析in
-        this.parserIn(sqlSource, finalSql, placeholderParamIdxMap);
+        this.parserInPlaceholder(sqlSource, finalSql, placeholderParamIdxMap);
 
         sqlSource.setSql(finalSql.toString());
         return sqlSource;
     }
 
-    private void parserIn(SqlSource sqlSource, StringBuilder finalSql, Map<Integer, String> placeholderParamIdxMap) {
+    private void parserInPlaceholder(SqlSource sqlSource, StringBuilder finalSql, Map<Integer, String> placeholderParamIdxMap) {
 
         int nextInIdx = finalSql.indexOf(" in ");
         while (nextInIdx > -1) {
@@ -111,7 +114,7 @@ public class AnnotationSqlSourceParser extends AbstractSqlSourceParser {
 
     }
 
-    private void parserLike(SqlSource sqlSource, StringBuilder finalSql, Map<Integer, String> placeholderParamIdxMap) {
+    private void parserLikePlaceholder(SqlSource sqlSource, StringBuilder finalSql, Map<Integer, String> placeholderParamIdxMap) {
 
         int nextLikeIdx = finalSql.indexOf("like");
         while (nextLikeIdx > -1) {
@@ -130,5 +133,92 @@ public class AnnotationSqlSourceParser extends AbstractSqlSourceParser {
             nextLikeIdx = finalSql.indexOf("like", nextLikeIdx + 1);
         }
 
+    }
+
+    @Override
+    public boolean parserIn(SqlSource sqlSource,
+                            Map<String, ParameterMeta> parameterMetas,
+                            Map<String, ParameterMeta> finalParameterMetas,
+                            ParameterMeta meta,
+                            Object parameterVal) {
+        if (meta.getPlaceholder().isIn()) {
+            if (!(parameterVal instanceof Iterable)) {
+                throw new ExecutorException("in 操作符参数必须实现Iterable接口");
+            }
+            StringBuilder inSqlSymbol = new StringBuilder();
+            Iterable inList = (Iterable) parameterVal;
+            int symbolIdx = meta.getPlaceholder().getSymbolIdx();
+            int nextSymbolIdx = symbolIdx;
+
+            int count = 0;
+            for (Object inItem : inList) {
+                //创建一个参数符号占位符元数据
+                ParameterMeta parameterMeta = new ParameterMeta()
+                        .setTypeHandler(TypeHandlerFactory.of(inItem.getClass()))
+                        .setVal(inItem)
+                        .setPlaceholder(new Placeholder().setSymbolIdx(nextSymbolIdx++));
+                finalParameterMetas.put(meta.getName() + nextSymbolIdx, parameterMeta);
+
+                //记录sql符号占位符字符串
+                inSqlSymbol.append("?,");
+                count++;
+            }
+
+            //将对应的后面的符号占位符索引值 +1
+            for (String pName2 : parameterMetas.keySet()) {
+                ParameterMeta meta2 = parameterMetas.get(pName2);
+                if (meta2.getPlaceholder().getSymbolIdx() > symbolIdx) {
+                    meta2.getPlaceholder().setSymbolIdx(meta2.getPlaceholder().getSymbolIdx() + count - 1);
+                }
+            }
+
+
+            inSqlSymbol = inSqlSymbol.deleteCharAt(inSqlSymbol.length() - 1);
+
+            String sql = sqlSource.getSql();
+            sql = sql.substring(0, meta.getPlaceholder().getCharIdx()) +
+                    inSqlSymbol + sql.substring(meta.getPlaceholder().getCharIdx() + 1);
+
+            sqlSource.setSql(sql);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public boolean parserDynamic(SqlSource sqlSource,
+                                 Map<String, ParameterMeta> parameterMetas,
+                                 ParameterMeta meta,
+                                 Object parameterVal) {
+
+        if (meta.getPlaceholder().isDynamic()) {
+            String sql = sqlSource.getSql();
+            sql = sql.substring(0, meta.getPlaceholder().getCharIdx())
+                    + parameterVal + sql.substring(meta.getPlaceholder().getCharIdx() + 1);
+
+            //将对应的后面的符号占位符索引值递增
+            for (String pName2 : parameterMetas.keySet()) {
+                ParameterMeta meta2 = parameterMetas.get(pName2);
+                if (meta2.getPlaceholder().getSymbolIdx() > meta.getPlaceholder().getSymbolIdx()) {
+                    meta2.getPlaceholder().setCharIdx(meta2.getPlaceholder().getCharIdx() + parameterVal.toString().length() - 1);
+                }
+            }
+
+            sqlSource.setSql(sql);
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    public void parserLike(Object parameterVal, ParameterMeta meta) {
+        if (meta.getPlaceholder().isLike()) {
+            if (!parameterVal.toString().contains("%")) {
+                parameterVal = "%" + parameterVal + "%";
+            }
+        }
+
+
+        meta.setVal(parameterVal);
     }
 }

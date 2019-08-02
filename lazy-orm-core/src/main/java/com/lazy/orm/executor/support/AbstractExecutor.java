@@ -8,6 +8,8 @@ import com.lazy.orm.handler.ResultHandler;
 import com.lazy.orm.handler.SelectResultHandler;
 import com.lazy.orm.handler.UpdateResultHandler;
 import com.lazy.orm.handler.simple.SimpleParameterValHandler;
+import com.lazy.orm.parser.SqlSourceParser;
+import com.lazy.orm.parser.annotation.AnnotationSqlSourceParser;
 import com.lazy.orm.tx.Transaction;
 
 /**
@@ -24,6 +26,7 @@ public abstract class AbstractExecutor implements Executor {
     protected ParameterValHandler parameterValHandler = new SimpleParameterValHandler();
     protected ResultHandler selectHandler = new SelectResultHandler();
     protected ResultHandler updateHandler = new UpdateResultHandler();
+    protected SqlSourceParser sqlSourceParser = new AnnotationSqlSourceParser();
     protected Log log = LogFactory.getLog(getClass());
 
 

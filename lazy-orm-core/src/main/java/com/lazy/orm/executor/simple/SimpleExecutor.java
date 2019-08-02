@@ -3,9 +3,11 @@ package com.lazy.orm.executor.simple;
 import com.lazy.orm.exception.ExecutorException;
 import com.lazy.orm.executor.support.AbstractExecutor;
 import com.lazy.orm.handler.ResultSetContext;
-import com.lazy.orm.mapper.*;
+import com.lazy.orm.mapper.MappedStatement;
+import com.lazy.orm.mapper.ParameterMap;
+import com.lazy.orm.mapper.ParameterMeta;
+import com.lazy.orm.mapper.SqlSource;
 import com.lazy.orm.tx.Transaction;
-import com.lazy.orm.type.TypeHandlerFactory;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -39,76 +41,25 @@ public class SimpleExecutor extends AbstractExecutor {
             Map<String, ParameterMeta> parameterMetas = parameterMap.getParameterMetas();
             Map<String, ParameterMeta> finalParameterMetas = new HashMap<>();
             SqlSource sqlSource = statement.getSqlSource();
-            String sql = sqlSource.getSql();
 
             for (String pName : parameterMetas.keySet()) {
                 ParameterMeta meta = parameterMetas.get(pName);
                 Object paramObject = params[meta.getParamIdx() - 1];
                 Object parameterVal = parameterValHandler.getVal(paramObject, meta.getName());
-                if (meta.getPlaceholder().isLike()) {
-                    parameterVal = "%" + parameterVal + "%";
-                }
 
-                log.info("parameter: #{" + meta.getName() + "} value:" + parameterVal);
-                meta.setVal(parameterVal);
+                sqlSourceParser.parserLike(parameterVal, meta);
 
-                if (meta.getPlaceholder().isDynamic()) {
-                    sql = sql.substring(0, meta.getPlaceholder().getCharIdx())
-                            + parameterVal + sql.substring(meta.getPlaceholder().getCharIdx() + 1);
-
-                    //将对应的后面的符号占位符索引值递增
-                    for (String pName2 : parameterMetas.keySet()) {
-                        ParameterMeta meta2 = parameterMetas.get(pName2);
-                        if (meta2.getPlaceholder().getSymbolIdx() > meta.getPlaceholder().getSymbolIdx()) {
-                            meta2.getPlaceholder().setCharIdx(meta2.getPlaceholder().getCharIdx() + parameterVal.toString().length() - 1);
-                        }
-                    }
-
-                    sqlSource.setSql(sql);
+                if (sqlSourceParser.parserDynamic(sqlSource, parameterMetas, meta, parameterVal)) {
                     continue;
                 }
 
-                if (meta.getPlaceholder().isIn()) {
-                    if (!(parameterVal instanceof Iterable)) {
-                        throw new ExecutorException("in 操作符参数必须实现Iterable接口");
-                    }
-                    StringBuilder inSqlSymbol = new StringBuilder();
-                    Iterable inList = (Iterable) parameterVal;
-                    int symbolIdx = meta.getPlaceholder().getSymbolIdx();
-                    int nextSymbolIdx = symbolIdx;
-
-                    int count = 0;
-                    for (Object inItem : inList) {
-                        //创建一个参数符号占位符元数据
-                        ParameterMeta parameterMeta = new ParameterMeta()
-                                .setTypeHandler(TypeHandlerFactory.of(inItem.getClass()))
-                                .setVal(inItem)
-                                .setPlaceholder(new Placeholder().setSymbolIdx(nextSymbolIdx++));
-                        finalParameterMetas.put(meta.getName() + nextSymbolIdx, parameterMeta);
-
-                        //记录sql符号占位符字符串
-                        inSqlSymbol.append("?,");
-                        count++;
-                    }
-
-                    //将对应的后面的符号占位符索引值 +1
-                    for (String pName2 : parameterMetas.keySet()) {
-                        ParameterMeta meta2 = parameterMetas.get(pName2);
-                        if (meta2.getPlaceholder().getSymbolIdx() > symbolIdx) {
-                            meta2.getPlaceholder().setSymbolIdx(meta2.getPlaceholder().getSymbolIdx() + count - 1);
-                        }
-                    }
-
-
-                    inSqlSymbol = inSqlSymbol.deleteCharAt(inSqlSymbol.length() - 1);
-                    sql = sql.substring(0, meta.getPlaceholder().getCharIdx()) +
-                            inSqlSymbol + sql.substring(meta.getPlaceholder().getCharIdx() + 1);
-
-                    sqlSource.setSql(sql);
+                if (sqlSourceParser.parserIn(sqlSource, parameterMetas, finalParameterMetas, meta, parameterVal)) {
                     continue;
                 }
 
                 finalParameterMetas.put(pName, meta);
+
+                log.info("parameter: #{" + meta.getName() + "} value:" + parameterVal);
             }
 
             parameterMap.setParameterMetas(finalParameterMetas);

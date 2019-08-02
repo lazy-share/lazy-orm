@@ -33,7 +33,7 @@ public class AnnotationMappedStatementParser extends AbstractMappedStatementPars
 
         //解析SqlSource
         SqlSourceParser sqlSourceParser = new AnnotationSqlSourceParser();
-        SqlSource sqlSource = sqlSourceParser.parser(method);
+        SqlSource sqlSource = sqlSourceParser.parserStatic(method);
 
         //解析ParameterMap
         ParameterMapParser parameterMapParser = new AnnotationParameterMapParser(sqlSource);

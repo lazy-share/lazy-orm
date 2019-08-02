@@ -140,7 +140,7 @@ public class UserMapperTest {
 //                .setIds(ids)
 //        );
 
-        List<UserEntity> userEntities = userMapper.findByParams(ids, "lazy", 3000000);
+        List<UserEntity> userEntities = userMapper.findByParams(ids, "lazy%", 3000000);
 
         System.out.println(JSON.toJSONString(userEntities));
         System.out.println(userEntities.size());
